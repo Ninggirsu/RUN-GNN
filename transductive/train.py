@@ -4,7 +4,6 @@ import os
 import random
 from pprint import pprint
 
-import numpy as np
 import torch
 from torch import nn
 
@@ -248,7 +247,7 @@ def gpu_setting(args):
     return device,gpu
 
 def parse_args(my_model, my_model_name: str):
-    parser = argparse.ArgumentParser(description="Parser for SS-GNN")
+    parser = argparse.ArgumentParser(description="Parser for RRE-GNN")
     parser.add_argument('--data_path', type=str, default='data/family/')
     parser.add_argument('--seed', type=str, default=-1)
     parser.add_argument('--n_layers', type=int, default=0,

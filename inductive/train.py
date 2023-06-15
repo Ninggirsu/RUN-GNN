@@ -11,7 +11,7 @@ from models.RED_GNN_induc import RED_GNN_induc
 from models.RRE_GNN import RRE_GNN
 from pprint import pprint
 from utils import Dict
-parser = argparse.ArgumentParser(description="Parser for RED-GNN")
+parser = argparse.ArgumentParser(description="Parser for RRE-GNN")
 parser.add_argument('--data_path', type=str, default='data/WN18RR_v1')
 parser.add_argument('--seed', type=str, default=1234)
 

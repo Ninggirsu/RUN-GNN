@@ -33,4 +33,6 @@ We can use the following commands to train the model and evaluate the link predi
     python -W ignore train.py --data_path=data/WN18RR_v1
 ```    
 
->Note: Because the size of the summarized data set is relatively small, and there are certain differences in the data distribution of the training subset and the test subset, a single training may not necessarily be able to obtain the optimal result. You can try to train the model with the same set of hyperparameters multiple times, and choose the best result based on the validated MRR value.
+> Note: Because the size of the summarized data set is relatively small, and there are certain differences in the data distribution of the training subset and the test subset, a single training may not necessarily be able to obtain the optimal result. You can try to train the model with the same set of hyperparameters multiple times, and choose the best result based on the validated MRR value. 
+
+> Note: The basic training code and evaluate code are copied from REDGNN's repository.
