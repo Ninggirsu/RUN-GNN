@@ -4,7 +4,7 @@
 import torch
 import torch.nn as nn
 from torch_scatter import scatter
-from .QRGRU import GateUnit
+from .QRFGU import QRFGU
 
 
 class wo_buffer(torch.nn.Module):
@@ -22,12 +22,12 @@ class wo_buffer(torch.nn.Module):
         self.gnn_layers = []
         for i in range(self.n_layer):
             self.gnn_layers.append(
-                IdentityLayer(self.hidden_dim, self.hidden_dim, self.attn_dim, self.n_rel, act=act))
+                G_GAT_Layer(self.hidden_dim, self.hidden_dim, self.attn_dim, self.n_rel, act=act))
         self.gnn_layers = nn.ModuleList(self.gnn_layers)
         self.dropout = nn.Dropout(params.dropout)
         self.W_final = nn.Linear(
             self.hidden_dim, 1, bias=False)  
-        self.gate = GateUnit(self.hidden_dim, self.hidden_dim)
+        self.gate = QRFGU(self.hidden_dim, self.hidden_dim)
 
     def forward(self, subs, rels, mode='train'):
         n = len(subs)
@@ -72,13 +72,13 @@ class wo_buffer(torch.nn.Module):
         return scores_all
 
 
-class IdentityLayer(torch.nn.Module):
+class G_GAT_Layer(torch.nn.Module):
     """
     使用gru编码身份的身份图神经网络
     """
 
     def __init__(self, in_dim, out_dim, attn_dim, n_rel, act=lambda x: x):
-        super(IdentityLayer, self).__init__()
+        super(G_GAT_Layer, self).__init__()
         self.n_rel = n_rel
         self.in_dim = in_dim
         self.out_dim = out_dim
@@ -86,7 +86,7 @@ class IdentityLayer(torch.nn.Module):
         self.act = act
         self.relu = nn.ReLU()
         self.rela_embed = nn.Embedding(2 * n_rel + 1, in_dim)
-        self.gate = GateUnit(in_dim, in_dim)
+        self.gate = QRFGU(in_dim, in_dim)
 
         self.W_h = nn.Linear(in_dim, out_dim, bias=False)
         self.Ws_attn = nn.Linear(in_dim, attn_dim, bias=False)

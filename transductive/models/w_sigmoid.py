@@ -4,7 +4,7 @@
 import torch
 import torch.nn as nn
 from torch_scatter import scatter
-from .QRGRU import GateUnit
+from .QRFGU import QRFGU
 
 class w_sigmoid(torch.nn.Module):
     def __init__(self, params, loader):
@@ -20,19 +20,19 @@ class w_sigmoid(torch.nn.Module):
         self.gnn_layers = []
         for i in range(self.n_layer):
             self.gnn_layers.append(
-                IdentityLayer(self.hidden_dim, self.hidden_dim, self.attn_dim, self.n_rel, act=act))
+                G_GAT_Layer(self.hidden_dim, self.hidden_dim, self.attn_dim, self.n_rel, act=act))
         self.gnn_layers = nn.ModuleList(self.gnn_layers)
         self.n_extra_layer = params.n_extra_layer
         self.extra_gnn_layers = []
         for i in range(self.n_extra_layer):
             self.extra_gnn_layers.append(
-                IdentityLayer(self.hidden_dim, self.hidden_dim, self.attn_dim, self.n_rel, act=act))
+                G_GAT_Layer(self.hidden_dim, self.hidden_dim, self.attn_dim, self.n_rel, act=act))
         self.extra_gnn_layers = nn.ModuleList(self.extra_gnn_layers)
 
         self.dropout = nn.Dropout(params.dropout)
         self.W_final = nn.Linear(
             self.hidden_dim, 1, bias=False)  
-        self.gate = GateUnit(self.hidden_dim, self.hidden_dim)
+        self.gate = QRFGU(self.hidden_dim, self.hidden_dim)
         self.params =params
 
     def forward(self, subs, rels, mode='train'):
@@ -100,19 +100,19 @@ class SES_v20p4(torch.nn.Module):
         self.gnn_layers = []
         for i in range(self.n_layer+1):
             self.gnn_layers.append(
-                IdentityLayer(self.hidden_dim, self.hidden_dim, self.attn_dim, self.n_rel, act=act))
+                G_GAT_Layer(self.hidden_dim, self.hidden_dim, self.attn_dim, self.n_rel, act=act))
         self.gnn_layers = nn.ModuleList(self.gnn_layers)
 
         self.extra_gnn_layers = []
         for i in range(self.n_layer):
             self.extra_gnn_layers.append(
-                IdentityLayer(self.hidden_dim, self.hidden_dim, self.attn_dim, self.n_rel, act=act))
+                G_GAT_Layer(self.hidden_dim, self.hidden_dim, self.attn_dim, self.n_rel, act=act))
         self.extra_gnn_layers = nn.ModuleList(self.extra_gnn_layers)
 
         self.dropout = nn.Dropout(params.dropout)
         self.W_final = nn.Linear(
             self.hidden_dim, 1, bias=False)  
-        self.gate = GateUnit(self.hidden_dim, self.hidden_dim)
+        self.gate = QRFGU(self.hidden_dim, self.hidden_dim)
 
     def forward(self, subs, rels, mode='train'):
         n = len(subs)
@@ -159,10 +159,10 @@ class SES_v20p4(torch.nn.Module):
         return scores_all
 
 
-class IdentityLayer(torch.nn.Module):
+class G_GAT_Layer(torch.nn.Module):
 
     def __init__(self, in_dim, out_dim, attn_dim, n_rel, act=lambda x: x):
-        super(IdentityLayer, self).__init__()
+        super(G_GAT_Layer, self).__init__()
         self.n_rel = n_rel
         self.in_dim = in_dim
         self.out_dim = out_dim
@@ -170,7 +170,7 @@ class IdentityLayer(torch.nn.Module):
         self.act = act
         self.relu = nn.ReLU()
         self.rela_embed = nn.Embedding(2 * n_rel + 1, in_dim)
-        self.gate = GateUnit(in_dim, in_dim)
+        self.gate = QRFGU(in_dim, in_dim)
 
         self.W_h = nn.Linear(in_dim, out_dim, bias=False)
         self.Ws_attn = nn.Linear(in_dim, attn_dim, bias=False)

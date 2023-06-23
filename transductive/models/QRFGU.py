@@ -1,10 +1,10 @@
 """
-full QRGRU implementation
+full QRFGU implementation
 """
 import torch
 import torch.nn as nn
 
-class GateUnit(nn.Module):
+class QRFGU(nn.Module):
     """
     Controls that new information can be added to old representations
     """
