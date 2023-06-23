@@ -1,4 +1,4 @@
-# RRE-GNN
+# RUN-GNN
 
 ## Start
 
@@ -12,7 +12,7 @@ Requirements
 
 ## For transductive reasoning
 
-We can use the following commands to train the model and evaluate the link prediction performance of RRE-GNN on the WN18RR dataset under the transductive setting.
+We can use the following commands to train the model and evaluate the link prediction performance of RUN-GNN on the WN18RR dataset under the transductive setting.
 
 ```    
     cd transductive
@@ -27,7 +27,7 @@ python -m torch.distributed.launch --nproc_per_node=2 train.py --data_path=data/
 ## For inductive reasoning
 
 
-We can use the following commands to train the model and evaluate the link prediction performance of RRE-GNN on the WN18RR_v1 dataset under the inductive setting.
+We can use the following commands to train the model and evaluate the link prediction performance of RUN-GNN on the WN18RR_v1 dataset under the inductive setting.
 ```    
     cd inductive
     python -W ignore train.py --data_path=data/WN18RR_v1

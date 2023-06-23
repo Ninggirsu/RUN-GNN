@@ -8,10 +8,9 @@ import torch
 from torch import nn
 
 from load_data import DataLoader
-from models.red_gnn import RED_GNN_trans
 from models.wo_buffer import wo_buffer
-from models.RRE_GNN_raw import RRE_GNN_raw
-from models.RRE_GNN import RRE_GNN
+from models.RUN_GNN_raw import RUN_GNN_raw
+from models.RUN_GNN import RUN_GNN
 from models.w_sigmoid import w_sigmoid
 from models.w_addition import w_addition
 from models.w_times import w_times
@@ -20,12 +19,11 @@ from utils import Dict, select_gpu
 
 model_dict:dict = {
         "wo_buffer": wo_buffer, # Removed extra auxiliary propagation layer
-        "RRE_GNN_raw": RRE_GNN_raw,
-        "RED_GNN_trans": RED_GNN_trans,
+        "RUN_GNN_raw": RUN_GNN_raw,
         "w_addition": w_addition, # Change the gate to use an addition operation or a multiplication operation
         "w_sigmoid":w_sigmoid, # Change the attention used to a normal sigmoid rather than softmax
         "w_times":w_times, # Change the gate to use  a multiplication operation
-        "RRE_GNN": RRE_GNN, # complete model
+        "RUN_GNN": RUN_GNN, # complete model
     }
 
 def main(Trainer, my_model, my_model_name: str, results_dir='results', epoch_num=80, extend_args = None):
@@ -198,8 +196,8 @@ def set_global_setting(my_model_name, results_dir, extend_args, args, loader, de
     else:
         raise Exception("Undefined dataset, need to set default hyperparameters for the dataset")
     # Set general hyperparameters
-    if args.n_extra_layers>0:
-        opts.n_extra_layer =args.n_extra_layers
+    if args.n_buffer_layers>0:
+        opts.n_extra_layer =args.n_buffer_layers
     else:
         opts.n_extra_layer = 3
     if args.n_layers > 0:
@@ -247,17 +245,17 @@ def gpu_setting(args):
     return device,gpu
 
 def parse_args(my_model, my_model_name: str):
-    parser = argparse.ArgumentParser(description="Parser for RRE-GNN")
+    parser = argparse.ArgumentParser(description="Parser for RUN-GNN")
     parser.add_argument('--data_path', type=str, default='data/family/')
     parser.add_argument('--seed', type=str, default=-1)
-    parser.add_argument('--n_layers', type=int, default=0,
-                        help="The num of basic layers")
-    parser.add_argument('--n_extra_layers', type=int, default=-1,
-                        help="The num of extra layers")
+    parser.add_argument("-n",'--n_layers', type=int, default=0,
+                        help="The num of G-GAT layers in Exploration Module")
+    parser.add_argument("-m", '--n_buffer_layers', type=int, default=-1,
+                        help="The num of G-GAT layers in Buffer Module")
     parser.add_argument('--model', type=str, default="no",
                         help="The model type")
     parser.add_argument('--tag', type=str, default="no",
-                        help="Additional descriptive text for the output")
+                        help="Additional descriptive text for the output folder")
     parser.add_argument('--n_batch', type=int, default=0,
                     help="train batch size")
     parser.add_argument('--n_tbatch', type=int, default=0,
@@ -281,7 +279,7 @@ def parse_args(my_model, my_model_name: str):
 
 if __name__ == '__main__':
     try:
-        main(TransductiveTrainer, my_model=RRE_GNN, my_model_name="SES_v25")
+        main(TransductiveTrainer, my_model=RUN_GNN, my_model_name="SES_v25")
     except:
         import sys
         import traceback

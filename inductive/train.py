@@ -7,11 +7,10 @@ import numpy as np
 from load_data import DataLoader
 from base_model import IndudctiveTrainer
 from utils import select_gpu
-from models.RED_GNN_induc import RED_GNN_induc
-from models.RRE_GNN import RRE_GNN
+from models.RUN_GNN import RUN_GNN
 from pprint import pprint
 from utils import Dict
-parser = argparse.ArgumentParser(description="Parser for RRE-GNN")
+parser = argparse.ArgumentParser(description="Parser for RUN-GNN")
 parser.add_argument('--data_path', type=str, default='data/WN18RR_v1')
 parser.add_argument('--seed', type=str, default=1234)
 
@@ -194,8 +193,8 @@ if __name__ == '__main__':
     opts.act = 'relu'
     opts.n_extra_layer = 0
     
-    my_model = RRE_GNN
-    my_model_name = "RRE_GNN"
+    my_model = RUN_GNN
+    my_model_name = "RUN_GNN"
     results_dir = 'results'
     epoch_num = 60
     

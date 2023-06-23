@@ -1,14 +1,14 @@
 """
-anather implementation of RRE-GNN 
+anather implementation of RUN-GNN 
 """
 import torch
 import torch.nn as nn
 from torch_scatter import scatter
 from .QRGRU import GateUnit
 
-class RRE_GNN_raw(torch.nn.Module):
+class RUN_GNN_raw(torch.nn.Module):
     def __init__(self, params, loader):
-        super(RRE_GNN_raw, self).__init__()
+        super(RUN_GNN_raw, self).__init__()
         self.n_layer = params.n_layer
         self.hidden_dim = params.hidden_dim
         self.attn_dim = params.attn_dim

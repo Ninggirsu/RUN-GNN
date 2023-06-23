@@ -4,7 +4,6 @@ import time
 
 from torch.optim import Adam
 from torch.optim.lr_scheduler import ExponentialLR
-from models.red_gnn import RED_GNN_trans
 from utils import cal_ranks, cal_performance, get_logger
 from torch import nn
 from torch.utils.data.distributed import DistributedSampler
@@ -15,11 +14,8 @@ from torch.utils.data import Dataset as tDataset, DataLoader as tDataLoader
 from load_data import DataLoader
 
 class TransductiveTrainer(object):
-    def __init__(self, args, loader, model= None):
-        if model is None:
-            self.model = RED_GNN_trans(args, loader)
-        else:
-            self.model = model
+    def __init__(self, args, loader, model):
+        self.model = model
         if torch.cuda.is_available():
             self.model.cuda()
 
