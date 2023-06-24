@@ -80,9 +80,7 @@ class RUN_GNN(torch.nn.Module):
         return scores_all
 
 class G_GAT_Layer(torch.nn.Module):
-    """
-    使用gru编码身份的身份图神经网络
-    """
+
 
     def __init__(self, in_dim, out_dim, attn_dim, n_rel, act=lambda x: x):
         super(G_GAT_Layer, self).__init__()
@@ -133,10 +131,6 @@ class G_GAT_Layer(torch.nn.Module):
         return hidden_new, h_n_qr
 
 class QRFGU(nn.Module):
-    """
-    控制新的信息能够添加到旧有表示
-    
-    """
 
     def __init__(self, input_size, hidden_size):
         super().__init__()
@@ -153,7 +147,6 @@ class QRFGU(nn.Module):
 
     def forward(self, message: torch.Tensor, query_r: torch.Tensor, hidden_state: torch.Tensor):
         """
-        通过类似GRU的门控机制更新实体表示
 
         :param message: message[batch_size,input_size]
         :param query_r: query_r[batch_size,input_size]

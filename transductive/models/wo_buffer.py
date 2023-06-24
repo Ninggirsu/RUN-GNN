@@ -73,9 +73,6 @@ class wo_buffer(torch.nn.Module):
 
 
 class G_GAT_Layer(torch.nn.Module):
-    """
-    使用gru编码身份的身份图神经网络
-    """
 
     def __init__(self, in_dim, out_dim, attn_dim, n_rel, act=lambda x: x):
         super(G_GAT_Layer, self).__init__()

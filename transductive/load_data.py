@@ -73,7 +73,7 @@ class DataLoader:
 
     def double_triple(self, triples):
         """
-        添加反向边
+        
         :param triples:
         :return:
         """
@@ -159,122 +159,8 @@ class DataLoader:
 
         return tail_nodes, sampled_edges, old_nodes_new_idx
 
-    def get_neighbors_v5(self, nodes, mode='train', target_nodes=None):
-        """
-        fast模型专用
-        目标是选出一批以target_nodes为尾实体的边
+   
 
-        如果这里我以target_nodes开始搜索，获得他的邻居，再对target节点做一次全邻域聚合，得到一个表示，这个表示和前一步得到的这些节点的隐藏表示一起判断谁是最后的答案。
-        这么做足够简单
-        此外，也可以一边只聚合关系，一边聚合关系和实体的组合，得到最终的表示。
-
-        看看前几跳对正确答案的覆盖程度。
-        :param nodes:
-        :param node_num:
-        :param mode:
-        :param target_nodes:
-        :return:
-        """
-        if mode == 'train':
-            KG = self.KG
-            M_sub = self.M_sub
-            M_obj = self.M_obj
-        else:
-            KG = self.tKG
-            M_sub = self.tM_sub
-            M_obj = self.tM_obj
-        if target_nodes is not None:
-            
-            length = max(nodes.shape[0],target_nodes.shape[0])
-            out_node_1hot = csr_matrix((np.ones(len(nodes)), (nodes[:, 1], nodes[:, 0])), shape=(
-                self.n_ent, length))
-            in_node_1hot = csr_matrix((np.ones(len(target_nodes)), (target_nodes[:, 1], target_nodes[:, 0])), shape=(
-                self.n_ent, length))
-            
-            
-            out_edge_1hot = M_sub.dot(out_node_1hot)
-            
-            in_edge_1hot = M_obj.dot(in_node_1hot)
-            
-            
-            edge_1hot = out_edge_1hot.multiply(in_edge_1hot)
-        else:
-            
-            
-            node_1hot = csr_matrix((np.ones(len(nodes)), (nodes[:, 1], nodes[:, 0])), shape=(
-                self.n_ent, nodes.shape[0]))
-            edge_1hot = M_sub.dot(node_1hot)
-        edges = np.nonzero(edge_1hot)
-        sampled_edges = np.concatenate(
-            [np.expand_dims(edges[1], 1), KG[edges[0]]], axis=1)
-        if torch.cuda.is_available():
-            sampled_edges = torch.LongTensor(sampled_edges).cuda()
-        else:
-            sampled_edges = torch.LongTensor(sampled_edges)
-        
-        head_nodes, head_index = torch.unique(sampled_edges[:, [0, 1]], dim=0, sorted=True, return_inverse=True)
-        tail_nodes, tail_index = torch.unique(sampled_edges[:, [0, 3]], dim=0, sorted=True, return_inverse=True)
-
-        sampled_edges = torch.cat([sampled_edges, head_index.unsqueeze(1), tail_index.unsqueeze(1)], 1)
-        mask = sampled_edges[:, 2] == (self.n_rel*2)
-        _, old_idx = head_index[mask].sort()
-        
-        old_nodes_new_idx = tail_index[mask][old_idx]
-
-        return tail_nodes, sampled_edges, old_nodes_new_idx, head_nodes
-
-    def get_neighbors_v4(self, nodes, node_num=0, mode='train', target_nodes=None):
-        """
-        fast模型专用
-        目标是选出一批以target_nodes为尾实体的边
-
-        如果这里我以target_nodes开始搜索，获得他的邻居，再对target节点做一次全邻域聚合，得到一个表示，这个表示和前一步得到的这些节点的隐藏表示一起判断谁是最后的答案。
-        这么做足够简单
-        此外，也可以一边只聚合关系，一边聚合关系和实体的组合，得到最终的表示。
-
-        看看前几跳对正确答案的覆盖程度。
-        :param nodes:
-        :param node_num:
-        :param mode:
-        :param target_nodes:
-        :return:
-        """
-        if mode == 'train':
-            KG = self.KG
-            M_sub = self.M_sub
-        else:
-            KG = self.tKG
-            M_sub = self.tM_sub
-        if target_nodes is not None:
-            nodes = target_nodes
-        if node_num==0:
-            
-            node_1hot = csr_matrix((np.ones(len(nodes)), (nodes[:, 1], nodes[:, 0])), shape=(
-                self.n_ent, nodes.shape[0]))
-        else:
-            node_1hot = csr_matrix((np.ones(len(nodes)), (nodes[:, 1], nodes[:, 0])), shape=(
-                self.n_ent, node_num))
-        edge_1hot = M_sub.dot(node_1hot)
-        edges = np.nonzero(edge_1hot)
-        sampled_edges = np.concatenate(
-            [np.expand_dims(edges[1], 1), KG[edges[0]]], axis=1)
-        if torch.cuda.is_available():
-            sampled_edges = torch.LongTensor(sampled_edges).cuda()
-        else:
-            sampled_edges = torch.LongTensor(sampled_edges)
-        
-        head_nodes, head_index = torch.unique(sampled_edges[:, [0, 1]], dim=0, sorted=True, return_inverse=True)
-        tail_nodes, tail_index = torch.unique(sampled_edges[:, [0, 3]], dim=0, sorted=True, return_inverse=True)
-
-        sampled_edges = torch.cat([sampled_edges, head_index.unsqueeze(1), tail_index.unsqueeze(1)], 1)
-        mask = sampled_edges[:, 2] == (self.n_rel*2)
-        _, old_idx = head_index[mask].sort()
-        
-        old_nodes_new_idx = tail_index[mask][old_idx]
-
-        return tail_nodes, sampled_edges, old_nodes_new_idx, head_nodes
-
-    
     def get_batch(self, batch_idx, steps=2, data='train'):
         if data == 'train':
             return np.array(self.train_data)[batch_idx]
