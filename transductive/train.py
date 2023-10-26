@@ -193,6 +193,39 @@ def set_global_setting(my_model_name, results_dir, extend_args, args, loader, de
         opts.n_batch = 5
         opts.n_tbatch = 1
         opts.n_extra_layer = 3
+    elif dataset == 'yago3':
+        opts.lr = 0.001
+        opts.decay_rate = 0.99
+        opts.lamb = 0.0001
+        opts.hidden_dim = 32
+        opts.attn_dim = 5
+        opts.n_layer = 4
+        opts.dropout = 0.25
+        opts.act = 'relu'
+        opts.n_batch = 15
+        opts.n_tbatch = 10
+    elif dataset == 'family':
+        opts.lr = 0.0036
+        opts.decay_rate = 0.999
+        opts.lamb = 0.000017
+        opts.hidden_dim = 48
+        opts.attn_dim = 5
+        opts.n_layer = 3
+        opts.dropout = 0.29
+        opts.act = 'relu'
+        opts.n_batch = 50
+        opts.n_tbatch = 50
+    elif dataset == 'umls':
+        opts.lr = 0.0036
+        opts.decay_rate = 0.999
+        opts.lamb = 0.000017
+        opts.hidden_dim = 48
+        opts.attn_dim = 5
+        opts.n_layer = 3
+        opts.dropout = 0.29
+        opts.act = 'relu'
+        opts.n_batch = 50
+        opts.n_tbatch = 50
     else:
         raise Exception("Undefined dataset, need to set default hyperparameters for the dataset")
     # Set general hyperparameters
